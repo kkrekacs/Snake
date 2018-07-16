@@ -1,10 +1,11 @@
 class Snake {
-  constructor(length, tiles) {
+  constructor(length, tiles, parent) {
     this.length = length;
     this.tiles = tiles;
     this.direction = 1;
     this.pos = 0;
     this.body = [];
+    this.parent = parent;
 
     this.generateSnake();
     this.startWatch();
@@ -15,27 +16,27 @@ class Snake {
     var self = this;
     setInterval(function () {
       self.move();
-    }, 1000);
+    }, 300);
   }
 
   move() {
     switch (this.direction) {
     case 0:
       this.body.unshift(this.body[0] - Math.sqrt(this.tiles.length));
-      this.tiles[this.body.pop()].setEmpty();
       break;
     case 1:
       this.body.unshift(this.body[0] + 1);
-      this.tiles[this.body.pop()].setEmpty();
       break;
     case 2:
       this.body.unshift(this.body[0] + Math.sqrt(this.tiles.length));
-      this.tiles[this.body.pop()].setEmpty();
       break;
-    case 3:
-      this.body.unshift(this.body[0] - 1);
-      this.tiles[this.body.pop()].setEmpty();
     default:
+      this.body.unshift(this.body[0] - 1);
+    }
+    if (this.tiles[this.body[0]].type !== 'food') {
+      this.tiles[this.body.pop()].setEmpty();
+    } else {
+      this.parent.generateFood();
     }
 
     for (var i = 0; i < this.body.length; i++) {
@@ -71,14 +72,13 @@ class Snake {
           self.direction = 2;
         }
         break;
-      case 41:
+      case 37:
         if (self.direction !== 1) {
           self.direction = 3;
         }
         break;
       default: self.direction = self.direction;
       }
-      console.log(self.direction);
     });
   }
 }
